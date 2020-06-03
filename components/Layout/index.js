@@ -1,11 +1,14 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
+import React, { Children } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import styled, { css } from "styled-components";
 import MediaQuery from "react-responsive";
 import ToolBar from "../Base/ToolBar";
 import MobileMenu from "../composite/MobileMenu";
 import BackDrop from "../Base/BackDrop";
+import { HEADER_HEIGHT } from "../../redux/types";
+import Add from "../../assets/icons/Add";
 
 const DHeaderContainer = styled.div`
   background-color: #f5f4f4;
@@ -25,6 +28,17 @@ const DesktopCart = styled.div`
 
 const DesktopNav = styled.nav`
   display: flex;
+  transition: all 0.5s linear;
+  ${({ scroll }) =>
+    scroll &&
+    css`
+      position: fixed;
+      z-index: 1000;
+      background: #f5f4f4;
+      top: 0;
+      left: 0;
+      width: 100%;
+    `}
 `;
 
 const NavList = styled.ul`
@@ -36,6 +50,12 @@ const NavList = styled.ul`
   width: 96%;
   height: 84px;
   text-align: center;
+  ${({ scroll }) =>
+    scroll &&
+    css`
+      margin: 0;
+      width: 100%;
+    `}
 `;
 
 const NavListItem = styled.li`
@@ -43,6 +63,7 @@ const NavListItem = styled.li`
   align-items: center;
   padding: 25px 38px 25px 22px;
   cursor: pointer;
+  color: ${({ active }) => (active ? "#f06060" : "#555")};
 `;
 
 const CartValue = styled.span`
@@ -60,8 +81,10 @@ const Space = styled.span`
   margin-right: 10px;
 `;
 
-const StyledIcon = styled.div`
+const StyledIcon = styled.span`
   position: relative;
+  display: flex;
+  align-items: center;
   ${({ width = 30, height = 30 }) => css`
     width: ${width}px;
     height: ${height}px;
@@ -147,15 +170,38 @@ const Search = styled.input`
     `}
 `;
 
+const ChildrenContainer = styled.div`
+  ${({ hide }) =>
+    !hide &&
+    css`
+      width: 96%;
+      box-sizing: border-box;
+      margin: 0 auto;
+    `}
+`;
+
+const Footer = styled.footer`
+  padding: 30px 0;
+  color: #ada2a4;
+  display: flex;
+  justify-content: center;
+`;
+
+const Divider = styled.hr`
+  border: 2px solid #fff;
+`;
+
 const hideHeader = { "/admin": true };
 
-export default function Layout({ children }) {
+const maxWidth = { "/": true };
+
+export default function Layout({ children, dispatch }) {
   const router = useRouter();
   const headerStatus = !hideHeader[router.asPath];
+  const headerRef = React.useRef();
   const [search, setSearch] = React.useState(false);
   const [drawer, setDrawer] = React.useState(false);
   const [scroll, setScrolled] = React.useState(false);
-  const headerHeight = React.useRef();
   React.useEffect(() => {
     const handleScoll = () => {
       if (window.pageYOffset > 10) {
@@ -165,6 +211,10 @@ export default function Layout({ children }) {
       }
     };
     window.addEventListener("scroll", handleScoll);
+    return () => window.removeEventListener("scroll", handleScoll);
+  }, []);
+  React.useLayoutEffect(() => {
+    dispatch({ type: HEADER_HEIGHT, height: headerRef.current?.clientHeight });
   }, []);
 
   const closeDrawer = () => setDrawer(false);
@@ -226,52 +276,70 @@ export default function Layout({ children }) {
       </MediaQuery>
       <MediaQuery query="(min-device-width: 651px)">
         {headerStatus && (
-          <DHeaderContainer ref={headerHeight}>
+          <DHeaderContainer ref={headerRef}>
             <DesktopHeader>
               <FlexWrapper spaceBetween>
                 <StyledIcon width={24}>
                   <Img src={"/images/search.svg"} alt="search" />
                 </StyledIcon>
-                <StyledIcon width={90} height={45}>
-                  <Img src="/images/Logo.png" alt="logo" />
-                </StyledIcon>
+                <Link href="/">
+                  <StyledIcon width={90} height={45}>
+                    <Img src="/images/Logo.png" alt="logo" />
+                  </StyledIcon>
+                </Link>
                 <DesktopCart>
                   <CartValue>₹ 0.00</CartValue>
                   <StyledIcon width={24}>
                     <Img src={"/images/cart.svg"} alt="cart" />
+                    <CartCount>
+                      <span className="count">0</span>
+                    </CartCount>
                   </StyledIcon>
                 </DesktopCart>
               </FlexWrapper>
-              <DesktopNav>
-                <NavList>
-                  <NavListItem>
-                    Home
-                    <StyledIcon width={14} marginRight>
-                      <Img src={"/images/add.svg"} alt="home" />
-                    </StyledIcon>
-                  </NavListItem>
-                  <NavListItem>
-                    Products
-                    <StyledIcon width={14} marginRight>
-                      <Img src={"/images/add.svg"} alt="products" />
-                    </StyledIcon>
-                  </NavListItem>
+              {router.asPath !== "/" && <Divider />}
+              <DesktopNav scroll={scroll}>
+                <NavList scroll={scroll}>
+                  <Link href="/">
+                    <a>
+                      <NavListItem active={router.asPath === "/"}>
+                        Home
+                        <StyledIcon width={14} marginRight>
+                          <Add active={router.asPath === "/"} />
+                        </StyledIcon>
+                      </NavListItem>
+                    </a>
+                  </Link>
+                  <Link href="/collections">
+                    <a>
+                      <NavListItem
+                        active={router.asPath.includes("/collections")}
+                      >
+                        Products
+                        <StyledIcon width={14} marginRight>
+                          <Add
+                            active={router.asPath.includes("/collections")}
+                          />
+                        </StyledIcon>
+                      </NavListItem>
+                    </a>
+                  </Link>
                   <NavListItem>
                     Recipes
                     <StyledIcon width={14} marginRight>
-                      <Img src={"/images/add.svg"} alt="recipes" />
+                      <Add active={router.asPath === "/recipes"} />
                     </StyledIcon>
                   </NavListItem>
                   <NavListItem>
                     About us
                     <StyledIcon width={14} marginRight>
-                      <Img src={"/images/add.svg"} alt="about us" />
+                      <Add active={router.asPath === "/aboutus"} />
                     </StyledIcon>
                   </NavListItem>
                   <NavListItem>
                     Contact us
                     <StyledIcon width={14} marginRight>
-                      <Img src={"/images/add.svg"} alt="contact us" />
+                      <Add active={router.asPath === "/contactus"} />
                     </StyledIcon>
                   </NavListItem>
                 </NavList>
@@ -279,8 +347,14 @@ export default function Layout({ children }) {
             </DesktopHeader>
           </DHeaderContainer>
         )}
-        {children({ search, drawer, scroll, headerHeight })}
+        <ChildrenContainer hide={maxWidth[router.asPath]}>
+          {children({ search, drawer, scroll })}
+        </ChildrenContainer>
       </MediaQuery>
+
+      <Footer>
+        © {new Date().getFullYear()}, TableSpoon. All rights reserved.
+      </Footer>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import Head from "next/head";
 import styled from "styled-components";
 import Router from "next/router";
 import Loader from "../components/Base/Loader";
@@ -96,18 +96,28 @@ function AdminPage() {
     [Router]
   );
   return (
-    <AdminForm onSubmit={handleSubmit}>
-      <Loader loading={loading} />
-      <LogoWrapper>
-        <Logo src="/images/Logo.png" alt="logo" />
-      </LogoWrapper>
-      {error && <Error>{error}</Error>}
-      <Input type="email" placeholder="Email" name="email" autoComplete="off" />
-      <Input type="password" placeholder="Password" name="password" />
-      <Button type="submit" bgColor="#333">
-        Login
-      </Button>
-    </AdminForm>
+    <React.Fragment>
+      <Head>
+        <title>Tablespoon | Admin panel</title>
+      </Head>
+      <AdminForm onSubmit={handleSubmit}>
+        <Loader loading={loading} />
+        <LogoWrapper>
+          <Logo src="/images/Logo.png" alt="logo" />
+        </LogoWrapper>
+        {error && <Error>{error}</Error>}
+        <Input
+          type="email"
+          placeholder="Email"
+          name="email"
+          autoComplete="off"
+        />
+        <Input type="password" placeholder="Password" name="password" />
+        <Button type="submit" bgColor="#333">
+          Login
+        </Button>
+      </AdminForm>
+    </React.Fragment>
   );
 }
 

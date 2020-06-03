@@ -1,17 +1,22 @@
-import React from "react";
+import Head from "next/head";
 import styled from "styled-components";
-import Shelf from "../../components/composite/shelf";
+import Shelf from "../../components/composite/products";
+// import Filters from "../../components/composite/products/Filters";
 import data from "../../data";
 
-const Collections = styled.div`
-  display: flex;
-`;
+// const Collections = styled.div`
+//   display: flex;
+// `;
 
 const Collection = styled.div`
   flex: 1;
 `;
 
-export default function Products() {
+const ItemContainer = styled.div`
+  display: flex;
+`;
+
+export default function CollectionItem() {
   const renderCollection = () => {
     return data.collections.map((_collection) => (
       <Collection key={_collection.id}>
@@ -25,9 +30,14 @@ export default function Products() {
     ));
   };
   return (
-    <div>
-      <Collections>{renderCollection()}</Collections>
-      <Shelf />
-    </div>
+    <React.Fragment>
+      <Head>
+        <title>Tablespoon | Single collection</title>
+      </Head>
+      <ItemContainer>
+        {/* <Collections>{renderCollection()}</Collections> */}
+        <Shelf />
+      </ItemContainer>
+    </React.Fragment>
   );
 }

@@ -1,5 +1,4 @@
 import { Provider } from "react-redux";
-import fetch from "isomorphic-fetch";
 import withRedux from "next-redux-wrapper";
 import { createGlobalStyle } from "styled-components";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -9,24 +8,25 @@ import store from "../redux";
 import { reauthenticate } from "../redux/actions/auth";
 
 const GlobalStyle = createGlobalStyle`
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap');
     ::-webkit-scrollbar {
       width: 10px;
     }
 
     /* Track */
     ::-webkit-scrollbar-track {
-      background: #f1f1f1;
+      background: #ada2a4;
     }
 
     /* Handle */
     ::-webkit-scrollbar-thumb {
-      background: #888;
+      background: #ada2a4;
     }
 
     * {
       box-sizing: border-box;
-      color: #342f2f;
-      font-family: "Raleway", Tahoma, Geneva, sans-serif, sans-serif;
+      color: #555;
+      font-family: 'Raleway', sans-serif;
     }
 
     body {
@@ -35,6 +35,7 @@ const GlobalStyle = createGlobalStyle`
     }
 
     a {
+      cursor:pointer;
       text-decoration: none;
     }
 
@@ -64,7 +65,7 @@ function MyApp({ Component, pageProps, store }) {
   }, []);
   return (
     <Provider store={store}>
-      <Layout>
+      <Layout dispatch={store.dispatch}>
         {(data) => (
           <React.Fragment>
             <GlobalStyle />

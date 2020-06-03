@@ -35,7 +35,7 @@ const StyledA = styled.a`
   align-items: center;
   justify-content: space-between;
   text-decoration: none;
-  color: #000;
+  color: #555;
 `;
 
 const Linkdd = styled.img`

@@ -19,6 +19,7 @@
     "next-redux-wrapper": "^6.0.0-rc.7",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-image-magnify": "^2.7.4",
     "react-loading-overlay": "^1.0.1",
     "react-redux": "^7.2.0",
     "react-responsive": "^8.0.3",
